@@ -1,21 +1,26 @@
 import numpy as np
 import random
 import scipy as sp
+import os
+import matplotlib.pylab as plt
+from timeit import default_timer as timer
 
-
-def generate_sparse_matrix(dim):
+def generate_sparse_matrix(dim1,dim2,diag,non_zero):
     #generate random sparse matrix
-    A = np.zeros((dim,dim), dtype = float)
-
-    for _ in range(10000):
-        A[random.randrange(dim)][random.randrange(dim)] = random.randint(-100,100)
+    A = np.zeros((dim1,dim2), dtype = float)
+    if diag == "yes" and dim1 == dim2:
+        for i in range(dim1):
+            A[i][i] = random.randint(-100,100)
+    else:
+        for _ in range(non_zero):
+            A[random.randrange(dim1)][random.randrange(dim2)] = random.randint(-100,100)
 
     return A 
 
-def generate_b(dim):
+def generate_b(dim1):
     #generate random b array of 1 dimension
     rng = np.random.default_rng()
-    b = rng.integers(low=-100, high=100, endpoint=True, size=(dim,1))     
+    b = rng.integers(low=-100, high=100, endpoint=True, size=(dim1,1))     
 
     return b  
 
@@ -58,20 +63,29 @@ def coo_format(A):
 
     return data, col, row
 
-#A = np.array([[3,2,0,0,0,0], [0,2,1,0,0,2], [0,2,1,0,0,0],[0,0,3,2,4,0], [0,4,0,0,1,0], [0,0,0,0,2,3]])
-
-# for _ in range(10):
-#     A = generate_sparse_matrix(1000)
-#     b = generate_b(1000)
-#     Ab = np.hstack((A,b)) 
-#     if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
-#         print(A)
-#         break
-
-#B = sp.sparse.csc_matrix((data,row_idx,col_ptr), shape=(3,3)).toarray()
-# b = np.array([1,2,3,4,5,6]).reshape(6,1)
-# x = sp.sparse.linalg.spsolve(B,b)
-#print(B)
-# print(b)
-# print(x)
-
+def main():
+    start = timer()
+    while True:
+        answer = input("Δώσε δίασταση του πίνακα (πχ.1000x1000), ναι ή οχι αν είναι διαγώνιος, πλήθος μη μηδενικών στοιχείων (enter για έξοδο): ")
+        if answer == '':
+            break
+        else:
+            dim, diag, non_zero = answer.split(",")
+        dim1, dim2 = dim.split("x")
+        dim1 = int(dim1)
+        dim2 = int(dim2)
+        non_zero = int(non_zero)
+        while True:
+            A = generate_sparse_matrix(dim1,dim2,diag,non_zero)
+            b = generate_b(dim1)
+            Ab = np.hstack((A,b)) 
+            if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
+                break
+        
+        data, col_idx, row_ptr = csr_format(A)
+        B = sp.sparse.csr_matrix((data,col_idx,row_ptr), shape=(dim1,dim2)).toarray()
+        x = sp.sparse.linalg.spsolve(B,b)
+        end = timer()
+        print("time: ",end-start)
+        
+main()
