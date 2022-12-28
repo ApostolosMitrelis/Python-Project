@@ -1,9 +1,10 @@
 from tkinter import *
-from PIL import ImageTk,Image
+
 
 root = Tk()
 root.title('Project code tkinter')
 root.geometry("400x400")
+
 
 
 OPTIONS = [
@@ -17,16 +18,31 @@ matrix.set("Import from a file")
 for text, option in OPTIONS:
     Radiobutton(root,text=text,variable=matrix,value=option).pack(anchor=N)
 
-
+def myGet():
+    lbl = Label(root,text= e.get()+ "|" + t.get() +"|"+ g.get()).pack()
+    e.delete(0,END)
+    t.delete(0,END)
+    g.delete(0,END)
+    
 def clicked(value):
-    myLabel = Label(root,text=value)
-    myLabel.pack()
-    if text == "Import from a file" :
+    if value == "import" :
          label1= Label(root,text="hello").pack()
-    elif text == "Generate a random matrix":
-        label2= Label(root,text="world").pack()
+    elif value == "generate":
+        myLabel1 = Label(root,text = "Δώσε δίασταση του πίνακα (πχ.1000x1000)").pack()
+        global e
+        e = Entry(root)
+        e.pack()
+        myLabel2 = Label(root,text = "ναι ή οχι αν είναι διαγώνιο").pack()
+        global t
+        t = Entry(root)
+        t.pack()
+        myLabel3 = Label(root,text = "πλήθος μη μηδενικών στοιχείων").pack()
+        global g
+        g = Entry(root)
+        g.pack()
+        myButton1= Button(root,text="Save my choises",command= myGet).pack()
 
 
-myButton = Button(root,text="Click to finalize option",command=lambda:clicked(matrix.get()))
+myButton = Button(root,text="Run",command=lambda:clicked(matrix.get()))
 myButton.pack()
 mainloop()
