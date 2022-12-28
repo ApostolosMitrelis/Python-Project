@@ -28,26 +28,26 @@ def myGet():
 # Function to execute based on selected option
 def clicked(value):
     if value == "import" :
-        # Display "hello" label
-        label1 = Label(root, text="hello", font=("Arial", 12), fg='#333333', bg='#ffffff')
-        label1.pack()
+        label1= Label(root, text="hello", font=("Arial", 12), fg='#333333').pack()
     elif value == "generate":
         # Display prompts and entry fields for matrix information
-        myLabel1 = Label(root, text="Δώσε δίασταση του πίνακα (πχ.1000x1000)", font=("Arial", 12), fg='#333333', bg='#ffffff')
-        myLabel1.pack()
+        myLabel1 = Label(root, text="Δώσε δίασταση του πίνακα (πχ.1000x1000)", font=("Arial", 12), fg='#333333').pack()
         global e
         e = Entry(root, font=("Arial", 12))
         e.pack()
-        myLabel2 = Label(root, text="ναι ή οχι αν είναι διαγώνιο", font=("Arial", 12), fg='#333333', bg='#ffffff')
-        myLabel2.pack()
+        myLabel2 = Label(root, text="ναι ή οχι αν είναι διαγώνιο", font=("Arial", 12), fg='#333333').pack()
         global t
         t = Entry(root, font=("Arial", 12))
         t.pack()
-        myLabel3 = Label(root, text="πλήθος μη μηδενικών στοιχείων", font=("Arial", 12), fg='#333333', bg='#ffffff')
-        myLabel3.pack()
+        myLabel3 = Label(root, text="πλήθος μη μηδενικών στοιχείων", font=("Arial", 12), fg='#333333').pack()
+        global g
+        g = Entry(root, font=("Arial", 12))
+        g.pack()
         # Create button to save matrix information
-        myButton1 = Button(root, text="Save my choises", command=myGet, font=("Arial", 12), bg='#333333', fg='white')
-        myButton1.pack()
+        myButton1 = Button(root, text="Save my choises", command=myGet, font=("Arial", 12), bg='#333333', fg='white').pack()
 
 # Create "Run" button to execute clicked function
-myButton = Button(root, text="Run", command=lambda:clicked(matrix.get()), font=("Arial", 12), bg='#333333')
+myButton = Button(root, text="Run", command=lambda:clicked(matrix.get()), font=("Arial", 12), bg='#333333', fg='white')
+myButton.pack()
+
+root.mainloop()
