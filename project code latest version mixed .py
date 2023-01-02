@@ -147,39 +147,30 @@ def coo_format(A):
 ##        v.deselect()
 
 def myGet():
-    while True:
-        global dim1
-        dim1 = int(dim1)
-        global dim2
-        dim2 = int(dim2)
-        global non_zero
-        non_zero = int(non_zero)
-        while True:
-                A = generate_sparse_matrix(dim1,dim2,diag,non_zero)
-                b = generate_b(dim1)
-                Ab = np.hstack((A,b)) 
-                if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
-                    break
+    global dim1
+    dim1 = int(dim1.get())
+    A = generate_sparse_matrix(dim1,dim2,diag,non_zero)
+    b = generate_b(dim1)
+    Ab = np.hstack((A,b)) 
+    if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
+        pass
         
-        data, col_idx, row_ptr = csr_format(A)
-        B = sp.sparse.csr_matrix((data,col_idx,row_ptr), shape=(dim1,dim2)).toarray()
-        x = sp.sparse.linalg.spsolve(B,b)
+    data, col_idx, row_ptr = csr_format(A)
+    B = sp.sparse.csr_matrix((data,col_idx,row_ptr), shape=(dim1,dim2)).toarray()
+    x = sp.sparse.linalg.spsolve(B,b)
         
 
 
 
 
 def main(value):
-    while True:
         if value == "import" :
             label1= Label(f10, text="hello", font=("Arial", 14), fg='black',bg='LightSkyBlue1').pack()
         elif value == "generate":
             myLabel1 = Label(f3, text="Δώσε δίασταση του πίνακα (Πρωτα γραμμες, μετα στηλες)", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
-            global e
-            e = Entry(f4, font=("Arial", 14,'bold'))
-            e.grid(row=0,column=0,padx=2)
-            global dim1
-            dim1 = e.get()
+            global dim1 
+            dim1 = Entry(f4, font=("Arial", 14,'bold'))
+            dim1.grid(row=0,column=0,padx=2)
             global dim2
             dim2 = Entry(f4, font=("Arial", 14,'bold'))
             dim2.grid(row=0,column=1,padx=2)
@@ -206,7 +197,6 @@ def main(value):
             myButton1.grid(row=0,column=0,padx=4)
             myButton2 = Button(f9, text="Restart", font=("Arial", 14), bg='black', fg='white',command=restart)
             myButton2.grid(row=0,column=1)
-            break
         #if answer == '':
             #break
         #else:
