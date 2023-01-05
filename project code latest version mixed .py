@@ -9,7 +9,7 @@ from timeit import default_timer as timer
 
 root = Tk()
 root.title('Project code tkinter')
-root.geometry("700x700")
+root.geometry("500x300")
 root.configure(bg='LightSkyBlue1')
 
 # Set up options for radio buttons
@@ -38,9 +38,9 @@ f8.pack()
 f9 = Frame(root,bg='LightSkyBlue1')
 f9.pack()
 f10 = Frame(root,bg='LightSkyBlue1')
-f10.pack()
-######
-
+f10.pack(fill=BOTH,expand=1)
+f12 = Frame(root,bg='LightSkyBlue1')
+f12.pack(fill=BOTH,expand=1)
 # Create a StringVar to store the selected option
 matrix = StringVar()
 matrix.set("Import from a file")
@@ -129,6 +129,7 @@ def import_file():
         b = np.load(f)
 
     A = sp.sparse.coo_matrix((data,(row,col)), shape=(dim1,dim2)).toarray()
+    
 
     return A, b, dim1, dim2
     
@@ -143,19 +144,41 @@ def myGet():
         b = generate_b(dim1)
         Ab = np.hstack((A,b)) 
         if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
-            pass
+            my_canvas = Canvas(f12,bg='LightSkyBlue1',highlightthickness=0)
+            my_canvas.pack(side=LEFT,fill=BOTH,expand=1)
+            my_scrollbar = ttk.Scrollbar(f12,orient=VERTICAL,command=my_canvas.yview)
+            my_scrollbar.pack(side=RIGHT,fill=Y)
+            my_canvas.configure(yscrollcommand=my_scrollbar.set)
+            my_canvas.bind('<Configure>',lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+            f13 = Frame(my_canvas,bg='LightSkyBlue1')
+            my_canvas.create_window((0,0),window=f13,anchor='nw')
+            print(solver(A,b,dim1,dim2))
+            telos = Label(f13, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='mint cream')
+            telos.pack(fill='x',expand=1)
+            break
         else:
             print("not solvable")
-    print(solver(A,b,dim1,dim2))
 
 def main(value):
     if value == "import" :
+        root.geometry("710x500")
+        my_canvas1 = Canvas(f10,bg='LightSkyBlue1', highlightthickness=0)
+        my_canvas1.pack(side=LEFT,fill=BOTH,expand=1)
+        my_scrollbar1 = ttk.Scrollbar(f10,orient=VERTICAL,command=my_canvas1.yview)
+        my_scrollbar1.pack(side=RIGHT,fill=Y)
+        my_canvas1.configure(yscrollcommand=my_scrollbar1.set)
+        my_canvas1.bind('<Configure>',lambda e: my_canvas1.configure(scrollregion = my_canvas1.bbox("all")))
+        f11 = Frame(my_canvas1,bg='LightSkyBlue1')
+        my_canvas1.create_window((0,0),window=f11,anchor='nw')
         A, b, dim1, dim2 = import_file()
         print(solver(A,b,dim1,dim2))
-        telos = Label(f10, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='mint cream')
-        telos.pack(fill=BOTH,expand=1)
+        telos = Label(f11, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='mint cream')
+        telos.pack(fill='x',expand=1)
+        myButton3 = Button(f9, text="Restart", font=("Arial", 14), bg='black', fg='white',command=restart)
+        myButton3.grid(row=0,column=1)
 
     elif value == "generate":
+        root.geometry("900x700")
         myLabel1 = Label(f3, text="Δώσε δίασταση του πίνακα (Πρωτα γραμμες, μετα στηλες)", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
         global e 
         e = Entry(f4, font=("Arial", 14,'bold'))
