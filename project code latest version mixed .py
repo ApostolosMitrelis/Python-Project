@@ -1,12 +1,11 @@
-import numpy as np
-import random
-import scipy as sp
-import os
-import matplotlib.pylab as plt
 from timeit import default_timer as timer
+from tkinter import ttk
 from tkinter import *
+import numpy as np
+import scipy as sp
+import random
 import os
-import sys
+from timeit import default_timer as timer
 
 root = Tk()
 root.title('Project code tkinter')
@@ -18,6 +17,7 @@ OPTIONS = [
     ("Import from a file","import"),
     ("Generate a random matrix","generate")
 ]
+
 ######
 f1 = Frame(root,bg='LightSkyBlue1')
 f1.pack()
@@ -40,21 +40,20 @@ f9.pack()
 f10 = Frame(root,bg='LightSkyBlue1')
 f10.pack()
 ######
+
 # Create a StringVar to store the selected option
 matrix = StringVar()
 matrix.set("Import from a file")
-diap= IntVar()
-#numpa= IntVar()
+diap= BooleanVar()
 
 # Create radio buttons
 for text, option in OPTIONS:
     Radiobutton(f1, text=text, variable=matrix, value=option, font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3').pack()
 
-diag = diap.get()
 def generate_sparse_matrix(dim1,dim2,diag,non_zero):
     #generate random sparse matrix
     A = np.zeros((dim1,dim2), dtype = float)
-    if diag == "Yes" and dim1 == dim2:
+    if diag and dim1 == dim2:
         for i in range(dim1):
             A[i][i] = random.randint(-100,100)
     else:
@@ -109,111 +108,82 @@ def coo_format(A):
 
     return data, col, row
 
-# Function to display entered information
-##def myGet():
-##    global lbl
-##    noompa = numpa.get()
-##    if diag == 1 and noompa == 1 :
-##        lbl = Label(f10, text=e.get()+ "-----" + 'Nαι' +"-----"+ non_zero.get()+ "-----"+'Χρησιμοποιεις Numba', font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1')
-##        lbl.pack()
-##        e.delete(0,END)
-##        dim2.delete(0,END)
-##        t.deselect()
-##        non_zero.delete(0,END)
-##        q.deselect()
-##    elif diag == 2 and noompa == 1 :
-##        lbl = Label(f10, text=e.get()+ "-----" + 'Oχι' +"-----"+ non_zero.get()+ "-----"+'Χρησιμοποιεις Numba', font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1')
-##        lbl.pack()
-##        e.delete(0,END)
-##        dim2.delete(0,END)
-##        h.deselect()
-##        non_zero.delete(0,END)
-##        q.deselect()
-##    elif diag == 1 and noompa == 2:
-##        lbl = Label(f10, text=e.get()+ "-----" + 'Nαι' +"-----"+ non_zero.get()+ "-----"+'Δεν χρησιμοποιεις Numba', font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1')
-##        lbl.pack()
-##        e.delete(0,END)
-##        dim2.delete(0,END)
-##        t.deselect()
-##        non_zero.delete(0,END)
-##        v.deselect()
-##    elif diag == 2 and noompa == 2:
-##        lbl = Label(f10, text=e.get()+ "-----" + 'Oχι' +"-----"+ non_zero.get+ "-----"+'Δεν χρησιμοποιεις Numba', font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1')
-##        lbl.pack()
-##        e.delete(0,END)
-##        dim2.delete(0,END)
-##        h.deselect()
-##        non_zero.delete(0,END)
-##        v.deselect()
+def solver(A,b, dim1, dim2):
+    data, col_idx, row_ptr = csr_format(A)
+    A = sp.sparse.csr_matrix((data,col_idx,row_ptr), shape=(dim1,dim2)).toarray()
+    start = timer()
+    x = sp.sparse.linalg.spsolve(A,b)
+    end = timer()
+    print('time: ', end - start)
+
+    return x
+
+def import_file():
+    x = ['1000no','2000no','3000no']
+    y = x[random.randint(0,2)]
+    dim1, dim2 = int(y[:4]), int(y[:4])
+    with open('matrix{}'.format(y), 'rb') as f:
+        data = np.load(f)
+        col = np.load(f)
+        row = np.load(f)
+        b = np.load(f)
+
+    A = sp.sparse.coo_matrix((data,(row,col)), shape=(dim1,dim2)).toarray()
+
+    return A, b, dim1, dim2
+    
 
 def myGet():
-    global dim1
-    dim1 = int(dim1.get())
-    A = generate_sparse_matrix(dim1,dim2,diag,non_zero)
-    b = generate_b(dim1)
-    Ab = np.hstack((A,b)) 
-    if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
-        pass
-        
-    data, col_idx, row_ptr = csr_format(A)
-    B = sp.sparse.csr_matrix((data,col_idx,row_ptr), shape=(dim1,dim2)).toarray()
-    x = sp.sparse.linalg.spsolve(B,b)
-        
-
-
-
+    dim1 = int(e.get())
+    dim2 = int(w.get())
+    non_zero = int(p.get())
+    diag = diap.get()
+    while True:
+        A = generate_sparse_matrix(dim1,dim2,diag,non_zero)
+        b = generate_b(dim1)
+        Ab = np.hstack((A,b)) 
+        if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
+            pass
+        else:
+            print("not solvable")
+    print(solver(A,b,dim1,dim2))
 
 def main(value):
-        if value == "import" :
-            label1= Label(f10, text="hello", font=("Arial", 14), fg='black',bg='LightSkyBlue1').pack()
-        elif value == "generate":
-            myLabel1 = Label(f3, text="Δώσε δίασταση του πίνακα (Πρωτα γραμμες, μετα στηλες)", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
-            global dim1 
-            dim1 = Entry(f4, font=("Arial", 14,'bold'))
-            dim1.grid(row=0,column=0,padx=2)
-            global dim2
-            dim2 = Entry(f4, font=("Arial", 14,'bold'))
-            dim2.grid(row=0,column=1,padx=2)
-            myLabel2 = Label(f5, text="Ναι ή οχι αν είναι διαγώνιος", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
-            global t
-            t = Radiobutton(f6, text='Yes', font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3',variable=diap,value=1)
-            t.grid(row=0,column=0,padx=3)
-            global h 
-            h = Radiobutton(f6, text='No', font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3',variable=diap,value=2)
-            h.grid(row=0,column=1,padx=3)
-            myLabel3 = Label(f7, text="Πλήθος μη μηδενικών στοιχείων", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
-            global non_zero
-            non_zero = Entry(f7, font=("Arial", 14,'bold'))
-            non_zero.pack(pady=5)
-            #myLabel4 = Label(f7, text="Θες να χρησιμοποιησεις numba?", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
-##        global q
-##        q = Radiobutton(f8, text='Ναι', font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3',variable=numpa,value=1)
-##        q.grid(row=0,column=0,padx=3)
-##        global v
-##        v = Radiobutton(f8, text='Οχι', font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3',variable=numpa,value=2)
-##        v.grid(row=0,column=1,padx=3)
-        # Create button to save matrix information
-            myButton1 = Button(f9, text="Save my choises", command=myGet, font=("Arial", 14), bg='black', fg='white')
-            myButton1.grid(row=0,column=0,padx=4)
-            myButton2 = Button(f9, text="Restart", font=("Arial", 14), bg='black', fg='white',command=restart)
-            myButton2.grid(row=0,column=1)
-        #if answer == '':
-            #break
-        #else:
-        #dim, diag, non_zero = answer.split(",")
-        #dim1, dim2 = dim.split("x")
-        #dim1 = int(dim1)
-        #dim2 = int(dim2)
-       #non_zero = int(non_zero)
-        
-        
+    if value == "import" :
+        A, b, dim1, dim2 = import_file()
+        print(solver(A,b,dim1,dim2))
+        telos = Label(f10, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='mint cream')
+        telos.pack(fill=BOTH,expand=1)
 
+    elif value == "generate":
+        myLabel1 = Label(f3, text="Δώσε δίασταση του πίνακα (Πρωτα γραμμες, μετα στηλες)", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
+        global e 
+        e = Entry(f4, font=("Arial", 14,'bold'))
+        e.grid(row=0,column=0,padx=2)
+        global w
+        w = Entry(f4, font=("Arial", 14,'bold'))
+        w.grid(row=0,column=1,padx=2)
+        myLabel2 = Label(f5, text="Ναι ή οχι αν είναι διαγώνιος", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
+        t = Radiobutton(f6, text='Yes', font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3',variable=diap,value=True)
+        t.grid(row=0,column=0,padx=3)
+        h = Radiobutton(f6, text='No', font=("Arial", 14,'bold'), fg='#000000',bg='LightSkyBlue1',pady='3',variable=diap,value=False)
+        h.grid(row=0,column=1,padx=3)
+        myLabel3 = Label(f7, text="Πλήθος μη μηδενικών στοιχείων", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
+        global p
+        p = Entry(f7, font=("Arial", 14,'bold'))
+        p.pack(pady=5)
+        # Create button to save matrix information
+        myButton1 = Button(f9, text="Save my choises", command=myGet, font=("Arial", 14), bg='black', fg='white')
+        myButton1.grid(row=0,column=0,padx=4)
+        # Create button to Restart the Program
+        myButton2 = Button(f9, text="Restart", font=("Arial", 14), bg='black', fg='white',command=restart)
+        myButton2.grid(row=0,column=1)
+        
 def restart():
     root.destroy()
-    os.startfile("Project code tkinter latest version.pyw")
+    os.startfile("latest clean mixed.pyw")
     
 # Create "Run" button to execute clicked function
 myButton = Button(f2, text="Run", command=lambda:main(matrix.get()), font=("Arial", 14), bg='black', fg='white',pady='2').pack(side ='top')
 
 root.mainloop()  
-
