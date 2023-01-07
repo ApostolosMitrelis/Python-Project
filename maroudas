@@ -1,13 +1,10 @@
 from timeit import default_timer as timer
-from tkinter import ttk
 from tkinter import *
 import numpy as np
 import scipy as sp
 import scipy.sparse
 import random
 import os
-from timeit import default_timer as timer
-import matplotlib.pyplot as plt
 import numba
 
 
@@ -101,13 +98,6 @@ def csr_format(A):
     return data, col_idx, row_ptr
 
 
-def csc_format(A):
-    # CSC format
-    A = A.T
-    data, row_idx, col_ptr = csr_format(A)
-    return data, row_idx, col_ptr
-
-
 def coo_format(A):
     # COO format
     row, col = np.nonzero(A)
@@ -176,8 +166,8 @@ def main(value):
         print(solver(A, b, dim1, dim2))
         lbl1= Label(f10, text="SOLUTION:", font=("Arial", 14, 'bold'), fg='black',bg='LightSkyBlue1').pack(pady=10)
         lbl2 = Label(f10, text=solver(A, b, dim1, dim2), font=("Arial", 14, 'bold'), fg='black',bg='LightSkyBlue1').pack(pady=10)
-        lbl3 = Label(f10, text="Time with numba: " + str(end - start)+' sec' , font=("Arial", 14, 'bold'), fg='black',bg='LightSkyBlue1').pack(pady=10)
-        lbl4 = Label(f10, text="Time without numba: "+ str(end - start)+' sec', font=("Arial", 14, 'bold'), fg='black',bg='LightSkyBlue1').pack()
+        lbl3 = Label(f10, text="Time with numba: " + str(end - start) + " sec" , font=("Arial", 14, 'bold'), fg='black',bg='LightSkyBlue1').pack(pady=10)
+        lbl4 = Label(f10, text="Time without numba: " + str(end - start) + " sec", font=("Arial", 14, 'bold'), fg='black',bg='LightSkyBlue1').pack()
         myButton3 = Button(f9, text="Restart", font=("Arial", 14), bg='black', fg='white', command=restart)
         myButton3.grid(row=0, column=1)
 
