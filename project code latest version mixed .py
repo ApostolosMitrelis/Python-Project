@@ -6,6 +6,8 @@ import scipy as sp
 import random
 import os
 from timeit import default_timer as timer
+import matplotlib.pyplot as plt
+
 
 root = Tk()
 root.title('Project code tkinter')
@@ -55,7 +57,7 @@ def generate_sparse_matrix(dim1,dim2,diag,non_zero):
     A = np.zeros((dim1,dim2), dtype = float)
     if diag and dim1 == dim2:
         for i in range(dim1):
-            A[i][i] = random.randint(-100,100)
+            A[i][i] = random.uniform(-100,100)
     else:
         for _ in range(non_zero):
             A[random.randrange(dim1)][random.randrange(dim2)] = random.randint(-100,100)
@@ -153,8 +155,6 @@ def myGet():
             f13 = Frame(my_canvas,bg='LightSkyBlue1')
             my_canvas.create_window((0,0),window=f13,anchor='nw')
             print(solver(A,b,dim1,dim2))
-            telos = Label(f13, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='mint cream')
-            telos.pack(fill='x',expand=1)
             break
         else:
             print("not solvable")
@@ -172,13 +172,15 @@ def main(value):
         my_canvas1.create_window((0,0),window=f11,anchor='nw')
         A, b, dim1, dim2 = import_file()
         print(solver(A,b,dim1,dim2))
-        telos = Label(f11, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='mint cream')
+        telos = Label(f11, text=(solver(A,b,dim1,dim2)), font=("Arial", 14), fg='black',bg='cadet blue')
         telos.pack(fill='x',expand=1)
+        plt.plot(solver(A,b,dim1,dim2))
+        plt.show()
         myButton3 = Button(f9, text="Restart", font=("Arial", 14), bg='black', fg='white',command=restart)
         myButton3.grid(row=0,column=1)
 
     elif value == "generate":
-        root.geometry("900x700")
+        root.geometry("665x700")
         myLabel1 = Label(f3, text="Δώσε δίασταση του πίνακα (Πρωτα γραμμες, μετα στηλες)", font=("Arial", 14,'bold'), fg='black',bg='LightSkyBlue1').pack()
         global e 
         e = Entry(f4, font=("Arial", 14,'bold'))
