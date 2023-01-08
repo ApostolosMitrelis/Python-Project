@@ -1,0 +1,45 @@
+import numpy as np
+import random
+
+def coo_format(A):
+    #COO format
+    row, col = np.nonzero(A)
+
+    data = np.array([])
+
+    for i in range(len(row)):
+        data = np.append(data, A[row[i]][col[i]])
+
+    return data, col, row
+
+def generate_sparse_matrix(dim1, dim2, diag, non_zero):
+    A = np.zeros((dim1, dim2), dtype=float)
+    if diag=='yes' and dim1 == dim2:
+        for i in range(dim1):
+            A[i][i] = random.uniform(-100, 100)
+    else:
+        for _ in range(non_zero):
+            A[random.randrange(dim1)][random.randrange(dim2)] = random.uniform(-100, 100)
+    return A
+
+def generate_b(dim1):
+    #generate random b array of 1 dimension
+    b=np.empty(dim1)
+    for i in range(dim1):
+        b[i]=random.uniform(-100,100)
+    return b
+
+while True:
+    A = generate_sparse_matrix(1000,1000,"yes",1000)
+    b = generate_b(1000)
+    Ab =np.concatenate((A, b[:, np.newaxis]), axis=1)
+    if np.linalg.matrix_rank(A) == np.linalg.matrix_rank(Ab):
+        break
+
+data, col, row = coo_format(A)
+
+with open('matrixx1000yes', 'ab') as f:
+    np.save(f, data)
+    np.save(f, col)
+    np.save(f, row)
+    np.save(f, b)
