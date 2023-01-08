@@ -22,6 +22,8 @@ $ pip install numba
 
 Χρήσιμοι σύνδεσμοι: https://numba.pydata.org/numba-doc/latest/user/installing.html
 
+ΠΡΟΣΟΧΗ! H numba δεν εχει βγει για την εκδοση 3.11 της python
+
 ΟΔΗΓΊΕΣ ΕΓΚΑΤΆΣΤΑΣΗΣ "Numpy":
 
 Η διαδικασία για την εγκατάσταση της Numpy είναι αντίστοιχη με αυτή της Numba.
