@@ -76,27 +76,7 @@ def generate_b(dim1):
     return b
 
 
-def csr_format_numba(A):
-    # CSR format
-    a, col_idx = np.nonzero(A)
 
-    data = np.empty(len(a), dtype=A.dtype)
-    row_ptr = np.empty(A.shape[0] + 1, dtype=np.int64)
-
-    start = a[0]
-    count = 0
-    row_ptr[0] = 0
-
-    for i in range(len(a)):
-        data[i] = A[a[i]][col_idx[i]]
-        if start != a[i]:
-            count += 1
-            row_ptr[count] = row_ptr[count - 1] + np.count_nonzero(a == count - 1)
-            start = a[i]
-
-    row_ptr[-1] = len(data)
-
-    return data, col_idx, row_ptr
 
 def csr_format(A):
     # CSR format
@@ -121,23 +101,7 @@ def csr_format(A):
     return data, col_idx, row_ptr
 
 
-def csc_format(A):
-    # CSC format
-    A = A.T
-    data, row_idx, col_ptr = csr_format(A)
-    return data, row_idx, col_ptr
 
-
-def coo_format(A):
-    # COO format
-    row, col = np.nonzero(A)
-
-    data = np.array([])
-
-    for i in range(len(row)):
-        data = np.append(data, A[row[i]][col[i]])
-
-    return data, col, row
 
 @numba.jit(nopython=True)
 def gauss_numba(A, b):  # A ο κυριος πινακας και β η στηλη
